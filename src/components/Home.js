@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import Todo from "./Todo";
 import Column from "./Column";
 import NavBar from "./NavBar";
 

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {Button, Card} from "@material-ui/core";
-import {ButtonToolbar, Form} from "react-bootstrap";
+import {Button} from "@material-ui/core";
+import {ButtonToolbar} from "react-bootstrap";
 import {EditTodoModal} from "./EditTodoModal";
 
 
@@ -16,7 +16,7 @@ export class Todo extends Component {
 
 
     deleteTodo(todoId) {
-        if (window.confirm('Aru you sure?')) {
+        if (window.confirm('Are you sure?')) {
             fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
                 method: 'DELETE',
                 header: {

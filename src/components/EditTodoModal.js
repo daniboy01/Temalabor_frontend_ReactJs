@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
-import {Modal, Button, Row, Col, Form, Dropdown} from 'react-bootstrap';
+import {Modal, Button, Row, Col, Form} from 'react-bootstrap';
 
 export class EditTodoModal extends Component{
     constructor(props){
         super(props);
         this.state = {
-            selectedState: this.props.state
+            selectedState: this.props.todoState
         };
         this.handleSubmit=this.handleSubmit.bind(this);
     }
@@ -28,9 +28,7 @@ export class EditTodoModal extends Component{
         window.location.reload(false)
     }
 
-
     render(){
-        const defState = this.props.state;
         return (
             <div className="container">
 
@@ -67,12 +65,12 @@ export class EditTodoModal extends Component{
                                     </Form.Group>
 
                                     <Form.Group controlId="TodoState">
-                                        <Form.Label>State</Form.Label>
+                                        <Form.Label>State: {this.state.selectedState}</Form.Label>
 
                                         <div>
                                             <select
-                                                value={this.state.selectedState}
-                                                onChange={(e) => this.setState({selectedState: e.target.value})}>
+                                                value={this.props.todoState}
+                                                onChange={(e) => this.setState({selectedState: e.target.value})}
                                             >
                                                 <option value="FÜGGŐBEN">FÜGGŐBEN</option>
                                                 <option value="ELHALASZTVA">ELHALASZTVA</option>
@@ -102,3 +100,4 @@ export class EditTodoModal extends Component{
     }
 
 }
+//

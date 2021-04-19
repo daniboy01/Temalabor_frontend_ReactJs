@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Modal,Button, Row, Col, Form} from 'react-bootstrap';
-import DateTimePicker from 'react-datetime-picker';
 
 export class AddTodoModal extends Component{
     constructor(props){

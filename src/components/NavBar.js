@@ -16,7 +16,7 @@ export class NavBar extends Component{
         return(
         <nav className="navbar navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" >MyKanban</a>
+                <p class="navbar-brand">MyKanban</p>
                 <ButtonToolbar>
                     <Button variant='primary'
                             onClick={() => this.setState({showAddModal: true})}>
@@ -27,7 +27,7 @@ export class NavBar extends Component{
                         </svg>
                     </Button>
 
-                    <AddTodoModal show={this.state.showAddModal} onHide={addTodoModal}></AddTodoModal>
+                    <AddTodoModal show={this.state.showAddModal} onHide={addTodoModal}/>
                 </ButtonToolbar>
             </div>
         </nav>
