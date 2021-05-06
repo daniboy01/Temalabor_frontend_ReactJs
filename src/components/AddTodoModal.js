@@ -12,7 +12,12 @@ export class AddTodoModal extends Component{
 
     handleSubmit(event){
         event.preventDefault();
-        fetch(process.env.REACT_APP_API+'tasks',{
+
+        this.postData(event);
+    }
+
+    async postData(event){
+        await fetch(process.env.REACT_APP_API+'tasks',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
@@ -24,7 +29,6 @@ export class AddTodoModal extends Component{
                 DeadLine: this.state.date
             })
         })
-        window.location.reload(false)
     }
 
     render(){
