@@ -15,9 +15,9 @@ export class Todo extends Component {
     }
 
 
-    deleteTodo(todoId) {
+    async deleteTodo(todoId) {
         if (window.confirm('Are you sure?')) {
-            fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
+            await fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
                 method: 'DELETE',
                 header: {
                     'Accept': 'application/json',
@@ -27,8 +27,8 @@ export class Todo extends Component {
         }
     }
 
-    doneTodo(todoId) {
-        fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
+    async doneTodo(todoId) {
+        await fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
             method: 'POST',
             header: {
                 'Accept': 'application/json',
