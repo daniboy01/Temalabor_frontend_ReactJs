@@ -12,7 +12,12 @@ export class EditTodoModal extends Component{
 
     handleSubmit(event){
         event.preventDefault();
-        fetch(process.env.REACT_APP_API+'tasks',{
+
+        this.updateData(event);
+    }
+
+    async updateData(event){
+        await fetch(process.env.REACT_APP_API+'tasks',{
             method:'PUT',
             headers:{
                 'Accept':'application/json',
@@ -25,7 +30,6 @@ export class EditTodoModal extends Component{
                 state: this.state.selectedState
             })
         })
-        window.location.reload(false)
     }
 
     render(){
