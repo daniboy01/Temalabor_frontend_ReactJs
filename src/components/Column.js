@@ -13,13 +13,25 @@ export class Column extends Component {
     }
 
     refrectList() {
-        fetch(process.env.REACT_APP_API + 'columns')
-            .then(response => response.json())
-            .then(data => {
-                this.setState({columns: data})
-            })
-        console.log(this.state);
+        // fetch(process.env.REACT_APP_API + 'columns')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         this.setState({columns: data})
+        //     })
+        // console.log(this.state);
+        this.getData().then( data => this.setState({columns:data}))
+
     }
+    async getData(){
+        let res = await fetch(process.env.REACT_APP_API + 'columns');
+
+        if(res.ok){
+            let json = await res.json();
+            return json;
+        }
+
+    }
+
 
     componentDidMount() {
         this.refrectList();

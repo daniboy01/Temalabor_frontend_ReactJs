@@ -25,7 +25,6 @@ export class Todo extends Component {
                 }
             })
         }
-        console.log("hahao")
     }
 
     doneTodo(todoId) {
