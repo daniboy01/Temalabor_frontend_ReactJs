@@ -4,7 +4,7 @@
 Az alkalmazás megjelenítését, frontednjét ReactJs framework adja.
 
 A felület:
-ide kép
+![image](https://user-images.githubusercontent.com/39564586/117572709-650f7800-b0d4-11eb-8c69-e8418f6e4ed7.png)
 
 # Column komponens
 Az induláskor megjelenő felületet a projekt Column.js komponense generálja ki. A felület html kódját az alábbi render metódus generálja:
@@ -55,7 +55,7 @@ A Column komponens state-je a konstruktorban jön létre:
 
 # AddTodoModal komponens
 A teendők létrehozásához az AddTodoModal komponens által generált moduláris ablak jelenik meg:
-ide kép
+![image](https://user-images.githubusercontent.com/39564586/117572740-84a6a080-b0d4-11eb-96d2-003bfd47afa6.png)
 
 Az Add Todo gomb lenyomása meghívja az alábbi metódust a komnponensen belül:
 ```
@@ -168,7 +168,7 @@ async doneTodo(todoId) {
 
 # EdiTodoModal komponens
 A teendők módosításaát az EditTodoModal komponens végzi ami egy moduláris ablakot jelenít meg, ahol a teendő adataik módosíthatók.
-ide kép.
+![image](https://user-images.githubusercontent.com/39564586/117572757-99833400-b0d4-11eb-9de8-2e911afc535c.png)
 
 Az ablak render() függvénye:
 ```
