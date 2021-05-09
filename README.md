@@ -1,70 +1,273 @@
-# Getting Started with Create React App
+# Kanban board
+### React.js frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Az alkalmazás megjelenítését, frontednjét ReactJs framework adja.
 
-## Available Scripts
+A felület:
+ide kép
 
-In the project directory, you can run:
+# Column komponens
+Az induláskor megjelenő felületet a projekt Column.js komponense generálja ki. A felület html kódját az alábbi render metódus generálja:
 
-### `npm start`
+```
+render() {
+        const {columns} = this.state;
+        return (
+            <div className="home">
+                <div className="row">
+                    {columns.map(col =>
+                        <div className="col" align="center">
+                            <h2>{col.state}</h2>
+                            <Todo todos={col.tasks}/>
+                        </div>
+                    )}
+                </div>
+            </div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+        )
+    }
+```
+A metódus elején a this.state-ben tárolt oszlopkat egy lokális változóba menti majd a row osztályú div tagen belül ezen végig iterálva megjeleníti az oszlopokat és átadja a Todo komponensnek a teendők listáját.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+A lekérést az alábbi aszinkron metódus végzi:
+```
+async getData(){
+        let res = await fetch(process.env.REACT_APP_API + 'columns');
 
-### `npm test`
+        if(res.ok){
+            let json = await res.json();
+            return json;
+        }
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    }
+```
 
-### `npm run build`
+A Column komponens state-je a konstruktorban jön létre:
+```
+    constructor(props) {
+        super(props);
+        this.state = {
+            columns: [],
+            showAddModal: false
+        }
+    }
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# AddTodoModal komponens
+A teendők létrehozásához az AddTodoModal komponens által generált moduláris ablak jelenik meg:
+ide kép
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Az Add Todo gomb lenyomása meghívja az alábbi metódust a komnponensen belül:
+```
+async postData(event){
+        await fetch(process.env.REACT_APP_API+'tasks',{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                Title:event.target.TodoTitle.value,
+                Description:event.target.TodoDescription.value,
+                DeadLine: this.state.date
+            })
+        })
+    }
+```
+A http kérés itt látszik, hogy POST mivel létrehozunk adatot az adatbázisnak.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Todo komponens
+A Column komponens a teendők generálását tovább adja a Todo komponensnek.
+A Todo komponens render függvénye a következő (átláthatóság miatt a button tagek között lévő gomb desgin svg tageket eltávolítottam innen, a kódban nem ) :
+```
+render() {
+        const {todoId, todoTitle, todoDesc, todoState} = this.state;
+        let editTodoModal = () => this.setState({showEditModal: false});
+        return (
 
-### `npm run eject`
+            <div>
+                {this.props.todos.map(t =>
+                    <div className="card">
+                        <div className="card-body">
+                            <h4>{t.title}</h4>
+                            <p>{t.description}</p>
+                            <p><h5>Létrehozva ekkor: </h5>{t.createdAt}</p>
+                            <ButtonToolbar>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+                                <div className="buttons">
+                                    <Button className="mr-2" variant="info"
+                                            onClick={() => this.setState({
+                                                showEditModal: true,
+                                                todoId: t.id,
+                                                todoTitle: t.title,
+                                                todoDesc: t.description,
+                                                todoState: t.state
+                                            })}
+                                    >
+                                        Edit button
+                                    </Button>
+                                    <Button className="mr-2" variant="danger"
+                                            onClick={() => this.deleteTodo(t.id)}
+                                    >
+                                        Delete button
+                                    </Button>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+                                    <Button onClick={() => this.doneTodo(t.id)}>
+                                        Done button
+                                    </Button>
+                                </div>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+                                <EditTodoModal show={this.state.showEditModal}
+                                               onHide={editTodoModal}
+                                               todoId={todoId}
+                                               todoTitle={todoTitle}
+                                               todoDesc={todoDesc}
+                                               todoState={todoState}
+                                />
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+                            </ButtonToolbar>
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+    }
+```
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+A megjelenítési feladatokon kívül ez a komponens kezeli a teendőket érintő műveleteket, minen művelet egy Backend-en lévő API endpoint hívását jelenti.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Törlés és a DONE státuszba állítás:
+A törlést végző metódus:
+```
+    async deleteTodo(todoId) {
+        if (window.confirm('Are you sure?')) {
+            await fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
+                method: 'DELETE',
+                header: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+        }
+    }
+```
 
-### Code Splitting
+A DONE státusz az alábbi metódus állítja be:
+```
+async doneTodo(todoId) {
+        await fetch(process.env.REACT_APP_API + 'tasks/' + todoId, {
+            method: 'POST',
+            header: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# EdiTodoModal komponens
+A teendők módosításaát az EditTodoModal komponens végzi ami egy moduláris ablakot jelenít meg, ahol a teendő adataik módosíthatók.
+ide kép.
 
-### Analyzing the Bundle Size
+Az ablak render() függvénye:
+```
+render(){
+        return (
+            <div className="container">
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+                <Modal
+                    {...this.props}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                >
+                    <Modal.Header clooseButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Edit todo
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
 
-### Making a Progressive Web App
+                        <Row>
+                            <Col sm={6}>
+                                <Form onSubmit={this.handleSubmit}>
+                                    <Form.Group controlId="TodoTitle">
+                                        <Form.Label>Title</Form.Label>
+                                        <Form.Control type="text" name="TodoTitle" required
+                                                      placeholder="Title"
+                                                      defaultValue={this.props.todoTitle}
+                                        />
+                                    </Form.Group>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+                                    <Form.Group controlId="TodoDescription">
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control type="text" name="TodoDescription" required
+                                                      placeholder="Description"
+                                                      defaultValue = {this.props.todoDesc}
+                                        />
+                                    </Form.Group>
 
-### Advanced Configuration
+                                    <Form.Group controlId="TodoState">
+                                        <Form.Label>State: {this.state.selectedState}</Form.Label>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+                                        <div>
+                                            <select
+                                                value={this.props.todoState}
+                                                onChange={(e) => this.setState({selectedState: e.target.value})}
+                                            >
+                                                <option value="FÜGGŐBEN">FÜGGŐBEN</option>
+                                                <option value="ELHALASZTVA">ELHALASZTVA</option>
+                                                <option value="FOLYAMATBAN">FOLYAMATBAN</option>
+                                            </select>
+                                        </div>
+                                    </Form.Group>
 
-### Deployment
+                                    <Form.Group>
+                                        <Button variant="primary" type="submit" onClick={this.props.onHide}>
+                                            Update todo
+                                        </Button>
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                        </Row>
+                    </Modal.Body>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={this.props.onHide}>Close</Button>
+                    </Modal.Footer>
 
-### `npm run build` fails to minify
+                </Modal>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+            </div>
+        )
+    }
+```
+
+A módosítást elküldő függvény:
+```
+handleSubmit(event){
+        event.preventDefault();
+
+        this.updateData(event);
+    }
+
+    async updateData(event){
+        await fetch(process.env.REACT_APP_API+'tasks',{
+            method:'PUT',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                id: this.props.todoId,
+                title:event.target.TodoTitle.value,
+                description:event.target.TodoDescription.value,
+                state: this.state.selectedState
+            })
+        })
+    }
+```
+Itt az eddigi kérésekhez hasonlítva látszik, hogy itt a method az PUT mivel adatmódosítás történik nem pedig lekérés vagy létrehozás.
+
+
