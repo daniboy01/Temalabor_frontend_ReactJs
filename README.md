@@ -4,7 +4,7 @@
 Az alkalmazás megjelenítését, frontednjét ReactJs framework adja.
 
 A felület:
-ide kép
+![image](https://user-images.githubusercontent.com/39564586/117572709-650f7800-b0d4-11eb-8c69-e8418f6e4ed7.png)
 
 # Column komponens
 Az induláskor megjelenő felületet a projekt Column.js komponense generálja ki. A felület html kódját az alábbi render metódus generálja:
